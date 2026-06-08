@@ -53,15 +53,7 @@ DEV_MODE=true go run ./cmd/auth-service
 DEV_MODE=true go run ./cmd/flag-service
 ```
 
-### 3. Seed (optional)
-
-Populates sample flags so the demo has something to evaluate:
-
-```bash
-bash scripts/seed.sh
-```
-
-### 4. Frontend
+### 3. Frontend
 
 ```bash
 cd frontend && bun install && bun dev
