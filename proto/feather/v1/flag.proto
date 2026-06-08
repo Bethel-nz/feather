@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package feather.v1;
+
+option go_package = "github.com/Bethel-nz/feather/proto/feather/v1;flagv1";
+
+import "google/protobuf/timestamp.proto";
+
+service AuthService {
+  rpc SignUp(SignUpRequest) returns (AuthResponse);
+  rpc LogIn(LogInRequest)   returns (AuthResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+}
+
+message SignUpRequest {
+  string email    = 1;
+  string password = 2;
+}
+
+message LogInRequest {
+  string email    = 1;
+  string password = 2;
+}
+
+message AuthResponse {
+  string access_token             = 1;
+  string user_id                  = 2;
+  string sdk_key                  = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+
+message ValidateTokenRequest  { string access_token = 1; }
+message ValidateTokenResponse {
+  bool   valid   = 1;
+  string user_id = 2;
+}
+
+service FlagService {
+  rpc CreateFlag(CreateFlagRequest) returns (Flag);
+  rpc ToggleFlag(ToggleFlagRequest) returns (Flag);
+  rpc UpdateRollout(UpdateRolloutRequest) returns (Flag);
+  rpc ListFlags(ListFlagsRequest) returns (ListFlagsResponse);
+  rpc DeleteFlag(DeleteFlagRequest) returns (DeleteFlagResponse);
+
+  rpc Evaluate(EvaluateRequest) returns (EvaluateResponse);
+}
+
+message Flag {
+  string key         = 1;
+  string description = 2;
+  bool   enabled     = 3;
+  uint32 rollout_percentage = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message CreateFlagRequest {
+  string key               = 1;
+  string description       = 2;
+  bool   enabled           = 3;
+  uint32 rollout_percentage = 4;
+}
+
+message ToggleFlagRequest {
+  string key     = 1;
+  bool   enabled = 2;
+}
+
+message UpdateRolloutRequest {
+  string key                = 1;
+  uint32 rollout_percentage = 2;
+}
+
+message ListFlagsRequest  {}
+message ListFlagsResponse { repeated Flag flags = 1; }
+
+message DeleteFlagRequest  { string key = 1; }
+message DeleteFlagResponse { bool deleted = 1; }
+
+message EvaluateRequest {
+  string key         = 1;
+  string context_key = 2;
+}
+
+message EvaluateResponse {
+  bool   enabled = 1;
+  string reason  = 2;
+}
