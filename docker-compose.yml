@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: feather
+      POSTGRES_PASSWORD: feather
+      POSTGRES_DB: feather
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./internal/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.auth
+    ports:
+      - "50051:50051"
+    environment:
+      PORT: "50051"
+      DATABASE_URL: "postgres://feather:feather@postgres:5432/feather?sslmode=disable"
+      JWT_SECRET: "feather-dev-secret-do-not-use-in-production"
+    depends_on:
+      - postgres
+
+  flag-service:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.flag
+    ports:
+      - "50052:50052"
+    environment:
+      PORT: "50052"
+      DATABASE_URL: "postgres://feather:feather@postgres:5432/feather?sslmode=disable"
+      JWT_SECRET: "feather-dev-secret-do-not-use-in-production"
+    depends_on:
+      - postgres
+      - auth-service
+
+volumes:
+  pgdata:
