@@ -39,6 +39,7 @@ gRPC feature-flag service with Postgres, JWT auth, SDK-key evaluation, and a Nex
 ### 1. Database
 
 ```bash
+createdb feather
 psql postgres://postgres:password@localhost:5432/feather < internal/postgres/schema.sql
 ```
 
@@ -46,24 +47,32 @@ psql postgres://postgres:password@localhost:5432/feather < internal/postgres/sch
 
 ```bash
 # Terminal 1 — Auth service
-go run ./cmd/auth-service
+DEV_MODE=true go run ./cmd/auth-service
 
 # Terminal 2 — Flag service
-go run ./cmd/flag-service
+DEV_MODE=true go run ./cmd/flag-service
 ```
 
-### 3. Frontend
+### 3. Seed (optional)
+
+Populates sample flags so the demo has something to evaluate:
 
 ```bash
-cd frontend && bun dev
+bash scripts/seed.sh
+```
+
+### 4. Frontend
+
+```bash
+cd frontend && bun install && bun dev
 ```
 
 Open http://localhost:3000. Auto-creates a demo user on first load.
 
-### 4. Demo app
+### 5. Demo app
 
 ```bash
-cd demo && bun dev
+cd demo && bun install && bun dev
 ```
 
 Open http://localhost:5173. Collaborative music player (Feather Rooms) consuming the flag service over HTTP.
